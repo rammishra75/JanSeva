@@ -8,7 +8,7 @@ const signToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, {
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, phone, role, preferredLanguage } = req.body;
+    const { name, email, password, phone, preferredLanguage } = req.body;
     const exists = await User.findOne({ email });
     if (exists) {
       return res.status(400).json({ success: false, message: 'Email already registered' });
@@ -17,7 +17,9 @@ export const register = async (req, res) => {
     const hashed = await bcrypt.hash(password, 12);
     const user = await User.create({
       name, email, password: hashed, phone,
-      role: role === 'authority' ? 'authority' : 'citizen',
+      // Staff accounts are provisioned by a deployment administrator, never via
+      // the public registration endpoint.
+      role: 'citizen',
       preferredLanguage: preferredLanguage || 'en'
     });
 

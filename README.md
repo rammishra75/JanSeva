@@ -84,6 +84,20 @@ npm run dev
 | Authority | officer@janseva.gov | password123 |
 | Admin | admin@janseva.gov | password123 |
 
+## Production staff accounts
+
+Public registration creates **citizen** accounts only. Create staff accounts from your deployment shell after setting the same `MONGODB_URI` used by the application. These commands create or update only the requested account; they never delete data.
+
+```bash
+ADMIN_NAME="JanSeva Admin" ADMIN_EMAIL="admin@yourdomain.gov" ADMIN_PASSWORD="use-a-strong-password" npm run create:admin
+```
+
+```bash
+OFFICER_NAME="Municipal Officer" OFFICER_EMAIL="officer@yourdomain.gov" OFFICER_PASSWORD="use-a-strong-password" AUTHORITY_NAME="Municipal Corporation" AUTHORITY_CODE="MUNICIPAL" AUTHORITY_DEPARTMENT="Municipal" AUTHORITY_ISSUE_TYPES="roads,water,sanitation,environment,other" AUTHORITY_SLA_HOURS=72 npm run create:authority
+```
+
+Do not run `npm run seed` in production: it removes existing users, authorities, and issues before creating demo records.
+
 ## API Endpoints
 
 ### Auth
