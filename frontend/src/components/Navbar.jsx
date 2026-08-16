@@ -25,7 +25,7 @@ export default function Navbar() {
             <li><Link to="/report" className={isActive('/report')}>{t('report')}</Link></li>
           )}
 
-          {(user?.role === 'authority' || user?.role === 'admin') && (
+          {user?.role === 'authority' && (
             <li><Link to="/officer" className={isActive('/officer')}>Workbench</Link></li>
           )}
 

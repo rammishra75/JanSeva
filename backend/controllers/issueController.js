@@ -203,7 +203,13 @@ export const getIssues = async (req, res) => {
     if (category) query.category = category;
 
     if (assignedToMe === 'true' && req.user) {
-      if (req.user.role === 'authority' && req.user.authorityId) {
+      if (req.user.role === 'authority') {
+        if (!req.user.authorityId) {
+          return res.status(403).json({
+            success: false,
+            message: 'Officer account is not linked to an authority department. Contact an administrator.'
+          });
+        }
         query.assignedAuthorities = req.user.authorityId;
       } else if (req.user.role === 'admin') {
         // admin sees all
@@ -315,6 +321,13 @@ export const updateIssueStatus = async (req, res) => {
 
     const issue = await Issue.findById(req.params.id);
     if (!issue) return res.status(404).json({ success: false, message: 'Issue not found' });
+
+    if (!req.user.authorityId || !issue.assignedAuthorities.some(id => id.equals(req.user.authorityId))) {
+      return res.status(403).json({
+        success: false,
+        message: 'This issue is not assigned to your authority department'
+      });
+    }
 
     if (req.user.role === 'authority' && status === 'resolved' && !req.files?.length && !req.body.resolutionNote) {
       return res.status(400).json({ success: false, message: 'Please provide a resolution note describing the fix' });

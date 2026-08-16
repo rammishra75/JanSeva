@@ -43,7 +43,7 @@ export default function IssueDetail() {
 
   const { issue, clusterInfo, lifecycleDurations } = data;
   const severity = issue.severity?.computed || issue.severity?.userReported || 3;
-  const isOfficer = user && (user.role === 'authority' || user.role === 'admin');
+  const isOfficer = user?.role === 'authority';
 
   return (
     <div className="page">

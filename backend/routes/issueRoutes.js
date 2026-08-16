@@ -19,7 +19,7 @@ router.post('/', protect, reportLimiter, upload.array('media', 5), createIssue);
 router.post('/sync', protect, syncOfflineIssues);
 router.post('/:id/vote', protect, voteLimiter, voteIssue);
 router.post('/:id/verify', protect, verifyResolution);
-router.patch('/:id/status', protect, authorize('authority', 'admin'), upload.array('resolutionProof', 3), updateIssueStatus);
+router.patch('/:id/status', protect, authorize('authority'), upload.array('resolutionProof', 3), updateIssueStatus);
 // Destructive actions are deliberately admin-only and require an explicit confirmation value.
 router.delete('/bulk/resolved', protect, authorize('admin'), deleteAllResolved);
 router.delete('/bulk/all', protect, authorize('admin'), deleteAllIssues);

@@ -11,9 +11,10 @@ export default function OfficerDashboard() {
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('active');
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!user || (user.role !== 'authority' && user.role !== 'admin')) {
+    if (!user || user.role !== 'authority') {
       navigate('/');
       return;
     }
@@ -22,6 +23,7 @@ export default function OfficerDashboard() {
 
   const loadIssues = () => {
     setLoading(true);
+    setError('');
     issueAPI.getIssues({ limit: 50, assignedToMe: 'true' }).then(res => {
       if (res.success) {
         let filtered = res.issues;
@@ -31,6 +33,9 @@ export default function OfficerDashboard() {
           filtered = filtered.filter(i => i.status === filter);
         }
         setIssues(filtered);
+      } else {
+        setIssues([]);
+        setError(res.message || 'Could not load your assigned issues.');
       }
       setLoading(false);
     });
@@ -49,7 +54,7 @@ export default function OfficerDashboard() {
         <div className="page-header officer-header">
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-              <h1>{user?.role === 'admin' ? 'Admin Command Center' : 'Officer Workbench'}</h1>
+              <h1>Officer Workbench</h1>
               <RoleBadge role={user?.role} />
             </div>
             <p>
@@ -97,6 +102,8 @@ export default function OfficerDashboard() {
             </button>
           ))}
         </div>
+
+        {error && <div className="alert alert-error">{error}</div>}
 
         {loading ? (
           <div className="loading">Loading assigned issues...</div>
