@@ -10,7 +10,7 @@ const router = Router();
 router.get('/authorities', getAuthorities);
 router.get('/authorities/:id', getAuthority);
 router.get('/heatmap', getHeatmap);
-router.get('/export', exportData);
+router.get('/export', protect, authorize('admin'), exportData);
 
 router.get('/dashboard', protect, authorize('admin', 'authority'), getDashboard);
 router.get('/chronic-zones', protect, authorize('admin', 'authority'), getChronicZonesData);

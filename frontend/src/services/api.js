@@ -71,7 +71,20 @@ export const analyticsAPI = {
   getHeatmap: (params) => api.get(`/analytics/heatmap?${new URLSearchParams(params)}`),
   getAuthorities: () => api.get('/analytics/authorities'),
   getChronicZones: () => api.get('/analytics/chronic-zones'),
-  exportData: (format) => api.get(`/analytics/export?format=${format}`)
+  exportData: (format) => api.get(`/analytics/export?format=${format}`),
+  downloadExport: async (format) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/analytics/export?format=${encodeURIComponent(format)}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      return { success: false, message: error.message || 'Could not export reports' };
+    }
+
+    return { success: true, blob: await response.blob() };
+  }
 };
 
 export default api;

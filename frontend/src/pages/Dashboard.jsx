@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(null);
+  const [exporting, setExporting] = useState(null);
 
   const load = () => {
     setLoading(true);
@@ -54,6 +55,26 @@ export default function Dashboard() {
     } else {
       window.alert(response.message || 'Could not delete reports.');
     }
+  };
+
+  const downloadExport = async (format) => {
+    setExporting(format);
+    const response = await analyticsAPI.downloadExport(format);
+    setExporting(null);
+
+    if (!response.success) {
+      window.alert(response.message || 'Could not export reports.');
+      return;
+    }
+
+    const url = URL.createObjectURL(response.blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `janseva-reports.${format}`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
   };
 
   if (loading) return <div className="loading"><div className="spinner" />Loading live analytics...</div>;
@@ -283,8 +304,12 @@ export default function Dashboard() {
         </div>
 
         <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
-          <a href="/api/analytics/export?format=json" className="btn btn-outline" target="_blank" rel="noreferrer">Export JSON</a>
-          <a href="/api/analytics/export?format=csv" className="btn btn-outline" download>Export CSV</a>
+          <button className="btn btn-outline" onClick={() => downloadExport('json')} disabled={Boolean(exporting)}>
+            {exporting === 'json' ? 'Preparing JSON...' : 'Export JSON'}
+          </button>
+          <button className="btn btn-outline" onClick={() => downloadExport('csv')} disabled={Boolean(exporting)}>
+            {exporting === 'csv' ? 'Preparing CSV...' : 'Export CSV'}
+          </button>
         </div>
       </div>
     </div>

@@ -109,9 +109,11 @@ export const exportData = async (req, res) => {
       const rows = issues.map(i =>
         `${i._id},"${i.title}",${i.category},${i.status},${i.location.coordinates[1]},${i.location.coordinates[0]},${i.severity.computed},${i.reportCount},${i.createdAt},${i.resolvedAt || ''}`
       ).join('\n');
-      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', 'attachment; filename="janseva-reports.csv"');
       res.send(header + rows);
     } else {
+      res.setHeader('Content-Disposition', 'attachment; filename="janseva-reports.json"');
       res.json({ success: true, count: issues.length, data: issues });
     }
   } catch (err) {
